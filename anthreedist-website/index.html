@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta property="og:title" content="Anthreedist">
+<meta property="og:image" content="logo.png">
+<title>Anthreedist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;600;700&display=swap">
+<style>
+  /* Layout: split storefront. Left = product stage with prev/next, right = sticky details + order.
+     Single dark look by choice: the brand is chrome on black. */
+  :root {
+    --ink: #ffffff;        /* page ground */
+    --stage: #f2f2f1;      /* product stage */
+    --panel: #ffffff;      /* details panel */
+    --line: #dedede;       /* hairlines */
+    --chrome-hi: #0a0a0b;  /* main text and buttons (black) */
+    --chrome-lo: #3a3d42;  /* secondary text */
+    --mute: #5f6368;
+    --font-display: "Archivo Black", "Arial Black", Impact, sans-serif;
+    --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    background: var(--ink);
+    color: var(--chrome-hi);
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--chrome-hi); outline-offset: 3px; }
+
+  .bar {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 12px 24px;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; min-width: 0; }
+  .brand img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none; border: 1px solid var(--line); }
+  .brand span { font-family: var(--font-display); font-weight: 400; letter-spacing: .2em; font-size: 16px; }
+  .ig { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; color: var(--chrome-lo); }
+  .ig svg { width: 20px; height: 20px; }
+  .ig:hover { color: var(--chrome-hi); }
+
+  .shop { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); min-height: calc(100vh - 65px); }
+
+  .viewer { position: sticky; top: calc(65px + env(safe-area-inset-top, 0px)); align-self: start; height: calc(100vh - 65px); display: flex; flex-direction: column; background: var(--stage); border-right: 1px solid var(--line); }
+  .stage {
+    position: relative; flex: 1; min-height: 0; display: grid; place-items: center; padding: 24px;
+    background: radial-gradient(ellipse 65% 60% at 50% 45%, #ffffff 0%, #f2f2f1 60%, #e6e6e4 100%);
+  }
+  .slide { width: min(100%, 640px); max-height: 100%; }
+  .slide img { display: block; width: 100%; height: auto; max-height: 100%; object-fit: contain; filter: drop-shadow(0 22px 26px rgba(0,0,0,.28)); }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 24px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 13px; letter-spacing: .2em; }
+  .nav button { background: none; border: 0; padding: 8px 4px; color: var(--chrome-lo); letter-spacing: inherit; font-family: inherit; font-size: inherit; }
+  .nav button:hover { color: var(--chrome-hi); }
+  .count { color: var(--chrome-lo); text-align: center; }
+  .count b { color: var(--chrome-hi); font-weight: 500; }
+
+  .info { background: var(--panel); padding: 64px clamp(24px, 6vw, 88px) 56px; display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+  .eyebrow { font-family: var(--font-mono); font-size: 13px; letter-spacing: .24em; color: var(--mute); text-transform: uppercase; }
+  h1 {
+    margin: 0; font-family: var(--font-display); font-weight: 400; line-height: 1;
+    font-size: clamp(1.9rem, 4vw, 3.2rem); letter-spacing: .01em; overflow-wrap: anywhere;
+    background: linear-gradient(172deg, #000000 10%, #2b2d31 55%, #0a0a0b 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tag { margin: 0; font-family: var(--font-mono); font-size: 14px; letter-spacing: .2em; color: var(--chrome-lo); text-transform: uppercase; }
+  .price { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-display); font-size: clamp(3rem, 6.5vw, 4.4rem); font-weight: 400; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--chrome-hi); }
+  .price small { font-family: var(--font-display); font-size: .38em; letter-spacing: .04em; color: var(--chrome-hi); margin: 0; }
+  .lede { margin: 0; max-width: 52ch; font-size: 1.05rem; color: #25272a; }
+  h2 { margin: 0 0 12px; font-family: var(--font-mono); font-weight: 500; font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+  .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .list li { display: flex; align-items: center; gap: 14px; font-weight: 500; }
+  .list li::before { content: ""; width: 20px; height: 1px; background: var(--mute); flex: none; }
+
+  .sizes { display: flex; flex-wrap: wrap; gap: 10px; }
+  .size { min-width: 64px; height: 46px; padding: 0 18px; background: transparent; border: 1px solid var(--chrome-lo); font-family: var(--font-mono); letter-spacing: .12em; }
+  .size:hover { border-color: var(--chrome-hi); }
+  .size[aria-pressed="true"] { background: var(--chrome-hi); color: var(--ink); border-color: var(--chrome-hi); }
+  .sizehint { margin: 10px 0 0; min-height: 1.4em; font-family: var(--font-mono); font-size: 13px; letter-spacing: .1em; color: var(--chrome-lo); }
+  .sizehint[data-error="true"] { color: #c0392b; }
+
+  .order {
+    width: 100%; max-width: 420px; min-height: 54px; padding: 0 24px;
+    background: var(--chrome-hi); color: var(--ink); border: 0;
+    font-family: var(--font-mono); font-weight: 500; font-size: 14px; letter-spacing: .24em; text-transform: uppercase;
+  }
+  .order:hover { background: #2b2d31; }
+  .more { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; color: var(--chrome-lo); text-decoration: none; text-transform: uppercase; }
+  .more:hover { color: var(--chrome-hi); }
+  .more svg { width: 14px; height: 14px; }
+
+  .specs { margin: 8px 0 0; padding-top: 24px; border-top: 1px solid var(--line); display: grid; gap: 10px; font-family: var(--font-mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
+  .specs div { display: flex; justify-content: space-between; gap: 16px; }
+  .specs dt { color: var(--mute); }
+  .specs dd { margin: 0; text-align: right; color: var(--chrome-lo); }
+
+  .phil { border-top: 1px solid var(--line); padding: 96px clamp(16px, 6vw, 88px) 104px; background: var(--ink); }
+  .phil__inner { max-width: 1100px; margin-inline: auto; display: grid; gap: 56px; }
+  .phil__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .term { padding: 40px 24px 36px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; min-width: 0; }
+  .term + .term { border-left: 1px solid var(--line); }
+  .glyph { font-family: var(--font-display); font-weight: 400; line-height: 1; font-size: clamp(2.6rem, 8vw, 6rem); letter-spacing: .02em;
+    background: linear-gradient(172deg, #000000 10%, #2b2d31 55%, #0a0a0b 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .glyph--big { font-size: clamp(4.4rem, 14vw, 10rem); }
+  .term .def { margin: 0; font-family: var(--font-mono); font-size: 14px; letter-spacing: .26em; text-transform: uppercase; }
+  .term .sub { margin: 0; color: var(--chrome-lo); font-size: 1.05rem; line-height: 1.5; }
+  .phil__text { margin: 0; max-width: 34ch; font-family: var(--font-body); font-weight: 600; font-size: clamp(1.4rem, 3.4vw, 2.1rem); line-height: 1.3; text-wrap: balance; }
+  .phil__close { margin: 0; font-family: var(--font-mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--chrome-lo); line-height: 2; }
+  .phil__close span { display: block; }
+
+  .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.82); }
+  .modal__box { width: min(100%, 360px); padding: 32px 28px 24px; background: var(--panel); border: 1px solid var(--line); display: grid; gap: 12px; text-align: center; }
+  .modal__box h3 { margin: 0 0 8px; font-family: var(--font-mono); font-weight: 500; font-size: 13px; letter-spacing: .3em; text-transform: uppercase; }
+  .modal__box a { display: block; padding: 14px; border: 1px solid var(--chrome-lo); text-decoration: none; font-family: var(--font-mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; }
+  .modal__box a:hover { background: var(--chrome-hi); color: var(--ink); border-color: var(--chrome-hi); }
+  .modal__box button { margin-top: 4px; background: none; border: 0; padding: 8px; color: var(--mute); font-family: var(--font-mono); font-size: 13px; letter-spacing: .2em; }
+  .modal__box button:hover { color: var(--chrome-hi); }
+
+  @media (max-width: 860px) {
+    .shop { grid-template-columns: minmax(0, 1fr); }
+    .viewer { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    .stage { aspect-ratio: 1 / 1.05; max-height: 70vh; padding: 20px 16px; }
+    .info { padding: 40px 16px 48px; }
+    .bar { padding: 10px 16px; }
+    .nav { padding: 12px 16px; }
+    .phil { padding-block: 64px 72px; }
+    .phil__grid { grid-template-columns: minmax(0, 1fr); }
+    .term + .term { border-left: 0; border-top: 1px solid var(--line); }
+    .term { padding: 32px 16px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .slide { animation: rise .35s ease-out; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  }
+  .eyebrow, .tag, h2, .nav, .count, .size, .sizehint, .order, .more, .specs, .ig, .term .def, .phil__close, .modal__box a, .modal__box button, .modal__box h3 { font-weight: 700; }
+  .count b { font-weight: 700; }
+  .list li { font-size: 1.05rem; font-weight: 600; }
+</style>
+
+<style>html,body{margin:0}</style>
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="#top" aria-label="Anthreedist">
+    <img src="logo.png" alt="Logo Anthreedist" width="40" height="40">
+    <span>ANTHREEDIST</span>
+  </a>
+  <a class="ig" id="igTop" href="https://instagram.com/anthreedist" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+    <span>@ANTHREEDIST</span>
+  </a>
+</header>
+
+<main class="shop" id="top">
+  <section class="viewer" aria-label="Foto produk">
+    <div class="stage" id="stage">
+      <!-- 1 / depan (ada gambar) -->
+      <div class="slide" data-label="Depan">
+        <img src="depan.png" alt="Kaos lengan panjang cokelat tua tampak depan, dengan grafis The World Is Yours di dada" width="911" height="539">
+      </div>
+      <!-- 2 / belakang (polos) -->
+      <div class="slide" data-label="Belakang" hidden>
+        <img src="belakang.png" alt="Kaos lengan panjang cokelat tua tampak belakang, polos tanpa gambar" width="905" height="523">
+      </div>
+    </div>
+    <div class="nav">
+      <button type="button" id="prev">PREV</button>
+      <div class="count" aria-live="polite"><b id="cur">01</b> / <span id="tot">03</span> &nbsp;·&nbsp; <span id="lab">DEPAN</span></div>
+      <button type="button" id="next">NEXT</button>
+    </div>
+  </section>
+
+  <section class="info" aria-label="Detail produk">
+    <div style="display:grid;gap:14px">
+      <div class="eyebrow" id="eyebrow">Clothing label / Anthreedist</div>
+      <h1 id="name">ANTHREEDIST</h1>
+      <p class="tag" id="tagline">Est. 2026</p>
+    </div>
+    <div class="price"><small>IDR</small><span id="price">150,000</span></div>
+    <p class="lede" id="lede"></p>
+
+    <div>
+      <h2>Produk details</h2>
+      <ul class="list" id="details"></ul>
+    </div>
+    <div>
+      <h2>Packaging</h2>
+      <ul class="list" id="packaging"></ul>
+    </div>
+    <div>
+      <h2 id="sizeLabel">Size</h2>
+      <div class="sizes" id="sizes" role="group" aria-labelledby="sizeLabel"></div>
+      <p class="sizehint" id="sizeHint" role="status"></p>
+    </div>
+
+    <button type="button" class="order" id="orderBtn">Order via WhatsApp</button>
+    <a class="more" id="igMore" href="https://instagram.com/anthreedist" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>
+      Check our Instagram
+    </a>
+
+    <dl class="specs" id="specs"></dl>
+  </section>
+</main>
+
+<section class="phil" id="philosophy" aria-labelledby="philTitle">
+  <div class="phil__inner">
+    <div class="eyebrow" id="philTitle">Anthreedist Philosophy</div>
+    <div class="phil__grid">
+      <div class="term"><div class="glyph" aria-hidden="true">AN</div><p class="def">AN = Anthro</p><p class="sub">Human</p></div>
+      <div class="term"><div class="glyph glyph--big" aria-hidden="true">3</div><p class="def">3 / Three</p><p class="sub">We work.<br>We pray.<br>We die.</p></div>
+      <div class="term"><div class="glyph" aria-hidden="true">DIST</div><p class="def">DIST = Distinct</p></div>
+    </div>
+    <p class="phil__text">ANTHREEDIST represents the human condition: we work to live, we pray for meaning, and we die to return.</p>
+    <p class="phil__close"><span>Different lives.</span><span>Different beliefs.</span><span>One inevitable return.</span></p>
+  </div>
+</section>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+  <div class="modal__box">
+    <h3 id="modalTitle">Pilih admin</h3>
+    <div id="admins" style="display:grid;gap:12px"></div>
+    <button type="button" id="cancel">[ BATAL ]</button>
+  </div>
+</div>
+
+<script>
+  /* ====== EDIT BAGIAN INI ======
+     Semua isi toko ada di sini. Nilai di bawah adalah contoh, ganti dengan data asli. */
+  var CONFIG = {
+    brand: "ANTHREEDIST",
+    tagline: "Est. 2026",
+    productName: "Longsleeve Boxy Tee",
+    price: 140000,
+    lede: "Kaos lengan panjang potongan boxy cropped warna cokelat tua, dengan grafis \"The World Is Yours\" di bagian dada. Bagian belakang polos.",
+    details: ["Cotton Combed 24S Supersoft", "Plastisol Screen Print", "Boxy Cropped Long Sleeve", "Dark Brown"],
+    packaging: ["Free packaging", "Hangtag Anthreedist", "Sticker pack"],
+    sizes: ["M", "L", "XL"],
+    specs: [["Material", "Cotton Combed 24S Supersoft"], ["Printing", "Plastisol Screen Print"], ["Shipping", "Seluruh Indonesia"]],
+    instagram: "https://instagram.com/anthreedist",
+    // Format nomor: kode negara tanpa +, tanpa spasi. Contoh 62812xxxxxxx
+    // Kalau admin lebih dari satu, pembeli diminta memilih admin dulu.
+    admins: [
+      { name: "Admin 01", phone: "6285770807401" }
+    ]
+  };
+
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var fmt = function (n) { return n.toLocaleString("en-US"); };
+
+    // Isi teks dari CONFIG
+    $("name").textContent = CONFIG.brand;
+    $("tagline").textContent = CONFIG.tagline;
+    $("price").textContent = fmt(CONFIG.price);
+    $("lede").textContent = CONFIG.lede;
+    $("igTop").href = CONFIG.instagram;
+    $("igMore").href = CONFIG.instagram;
+    function fill(id, items) { var el = $(id); items.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; el.appendChild(li); }); }
+    fill("details", CONFIG.details);
+    fill("packaging", CONFIG.packaging);
+    CONFIG.specs.forEach(function (s) {
+      var row = document.createElement("div"), dt = document.createElement("dt"), dd = document.createElement("dd");
+      dt.textContent = s[0]; dd.textContent = s[1]; row.appendChild(dt); row.appendChild(dd); $("specs").appendChild(row);
+    });
+
+    // Galeri
+    var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+    var idx = 0;
+    $("tot").textContent = String(slides.length).padStart(2, "0");
+    function show(i) {
+      idx = (i + slides.length) % slides.length;
+      slides.forEach(function (s, n) { s.hidden = n !== idx; });
+      $("cur").textContent = String(idx + 1).padStart(2, "0");
+      $("lab").textContent = slides[idx].getAttribute("data-label").toUpperCase();
+    }
+    $("prev").addEventListener("click", function () { show(idx - 1); });
+    $("next").addEventListener("click", function () { show(idx + 1); });
+    document.addEventListener("keydown", function (e) {
+      if (!$("modal").hidden) { if (e.key === "Escape") closeModal(); return; }
+      if (e.key === "ArrowLeft") show(idx - 1);
+      if (e.key === "ArrowRight") show(idx + 1);
+    });
+    show(0);
+
+    // Size
+    var size = null, hint = $("sizeHint");
+    CONFIG.sizes.forEach(function (s) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "size"; b.textContent = s; b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", function () {
+        size = s;
+        Array.prototype.forEach.call($("sizes").children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+        hint.dataset.error = "false"; hint.textContent = "Size " + s + " dipilih";
+      });
+      $("sizes").appendChild(b);
+    });
+
+    // Order via WhatsApp
+    var lastFocus = null;
+    function message() {
+      return "Halo " + CONFIG.brand + ", saya mau order:\n" +
+        "Produk: " + CONFIG.productName + "\n" +
+        "Size: " + size + "\n" +
+        "Harga: IDR " + fmt(CONFIG.price) + "\n\nApakah masih tersedia?";
+    }
+    function waLink(phone) { return "https://wa.me/" + phone + "?text=" + encodeURIComponent(message()); }
+    function closeModal() { $("modal").hidden = true; if (lastFocus) lastFocus.focus(); }
+    $("orderBtn").addEventListener("click", function () {
+      if (!size) { hint.dataset.error = "true"; hint.textContent = "Pilih size dulu sebelum order."; return; }
+      if (CONFIG.admins.length === 1) {
+        var one = document.createElement("a");
+        one.href = waLink(CONFIG.admins[0].phone); one.target = "_blank"; one.rel = "noopener";
+        document.body.appendChild(one); one.click(); document.body.removeChild(one); return;
+      }
+      var box = $("admins"); box.textContent = "";
+      CONFIG.admins.forEach(function (a) {
+        var l = document.createElement("a");
+        l.href = waLink(a.phone); l.target = "_blank"; l.rel = "noopener"; l.textContent = a.name;
+        l.addEventListener("click", closeModal);
+        box.appendChild(l);
+      });
+      lastFocus = $("orderBtn"); $("modal").hidden = false; box.firstChild.focus();
+    });
+    $("cancel").addEventListener("click", closeModal);
+    $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeModal(); });
+  })();
+</script>
+
+</body>
+</html>
