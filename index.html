@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta property="og:title" content="Anthreedist">
-<meta property="og:image" content="logo.png">
+<meta property="og:image" content="logo-mark.png">
 <title>Anthreedist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +49,7 @@
     border-bottom: 1px solid var(--line);
   }
   .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; min-width: 0; }
-  .brand img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 1px solid var(--line); }
+  .brand img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 1px solid #e0e0e0; }
   .brand span { font-family: var(--font-display); font-weight: 400; letter-spacing: .2em; font-size: 16px; }
   .ig { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-mono); font-size: 13px; letter-spacing: .18em; color: var(--chrome-lo); }
   .ig svg { width: 20px; height: 20px; }
@@ -81,7 +81,7 @@
   .tag { margin: 0; font-family: var(--font-mono); font-size: 14px; letter-spacing: .2em; color: var(--chrome-lo); text-transform: uppercase; }
   .price { display: flex; align-items: baseline; gap: 12px; font-family: var(--font-display); font-size: clamp(3rem, 6.5vw, 4.4rem); font-weight: 400; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--chrome-hi); }
   .price small { font-family: var(--font-display); font-size: .38em; letter-spacing: .04em; color: var(--chrome-hi); margin: 0; }
-  .lede { margin: 0; max-width: 52ch; font-size: 1.05rem; color: #25272a; }
+  
   h2 { margin: 0 0 12px; font-family: var(--font-mono); font-weight: 500; font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
   .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
   .list li { display: flex; align-items: center; gap: 14px; font-weight: 500; }
@@ -119,9 +119,8 @@
   .glyph--big { font-size: clamp(4.4rem, 14vw, 10rem); }
   .term .def { margin: 0; font-family: var(--font-mono); font-size: 14px; letter-spacing: .26em; text-transform: uppercase; }
   .term .sub { margin: 0; color: var(--chrome-lo); font-size: 1.05rem; line-height: 1.5; }
-  .phil__text { margin: 0; max-width: 34ch; font-family: var(--font-body); font-weight: 600; font-size: clamp(1.4rem, 3.4vw, 2.1rem); line-height: 1.3; text-wrap: balance; }
-  .phil__close { margin: 0; font-family: var(--font-mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--chrome-lo); line-height: 2; }
-  .phil__close span { display: block; }
+  .phil__text { margin: 0; max-width: 52ch; font-family: var(--font-body); font-weight: 400; font-size: clamp(1rem, 2.2vw, 1.2rem); line-height: 1.6; text-wrap: balance; }
+
 
   .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.82); }
   .modal__box { width: min(100%, 360px); padding: 32px 28px 24px; background: var(--panel); border: 1px solid var(--line); display: grid; gap: 12px; text-align: center; }
@@ -153,7 +152,7 @@
     .slide { animation: rise .35s ease-out; }
     @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   }
-  .eyebrow, .tag, h2, .nav, .count, .size, .sizehint, .order, .more, .specs, .ig, .term .def, .phil__close, .modal__box a, .modal__box button, .modal__box h3 { font-weight: 700; }
+  .eyebrow, .tag, h2, .nav, .count, .size, .sizehint, .order, .more, .specs, .ig, .term .def, .modal__box a, .modal__box button, .modal__box h3 { font-weight: 700; }
   .count b { font-weight: 700; }
   .list li { font-size: 1.05rem; font-weight: 600; }
 </style>
@@ -198,7 +197,7 @@
       <p class="tag" id="tagline">Est. 2026</p>
     </div>
     <div class="price"><small>IDR</small><span id="price">140,000</span></div>
-    <p class="lede" id="lede"></p>
+    
 
     <div>
       <h2>Produk details</h2>
@@ -233,7 +232,7 @@
       <div class="term"><div class="glyph" aria-hidden="true">DIST</div><p class="def">DIST = Distinct</p></div>
     </div>
     <p class="phil__text">ANTHREEDIST represents the human condition: we work to live, we pray for meaning, and we die to return.</p>
-    <p class="phil__close"><span>Different lives.</span><span>Different beliefs.</span><span>One inevitable return.</span></p>
+    
   </div>
 </section>
 
@@ -253,7 +252,6 @@
     tagline: "Est. 2026",
     productName: "Longsleeve Boxy Tee",
     price: 140000,
-    lede: "Dark brown long sleeve boxy tee with a \u201cThe World Is Yours\u201d tiger graphic on the front. Clean back, easy everyday fit.",
     details: ["Cotton Combed 24S Supersoft", "Plastisol Screen Print", "Longsleeve Boxy Tee", "Dark Brown"],
     packaging: ["Free packaging", "Hangtag", "Sticker pack"],
     sizes: ["M", "L", "XL"],
@@ -262,7 +260,7 @@
     // Format nomor: kode negara tanpa +, tanpa spasi. Contoh 62812xxxxxxx
     // Kalau admin lebih dari satu, pembeli diminta memilih admin dulu.
     admins: [
-      { name: "Admin 01", phone: "6285770807401" }
+      { name: "Admin 01", phone: "6285137077920" }
     ]
   };
 
@@ -274,7 +272,7 @@
     $("name").textContent = CONFIG.brand;
     $("tagline").textContent = CONFIG.tagline;
     $("price").textContent = fmt(CONFIG.price);
-    $("lede").textContent = CONFIG.lede;
+
     $("igTop").href = CONFIG.instagram;
     $("igMore").href = CONFIG.instagram;
     function fill(id, items) { var el = $(id); items.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; el.appendChild(li); }); }
